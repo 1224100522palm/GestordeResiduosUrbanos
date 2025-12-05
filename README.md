@@ -83,21 +83,6 @@ Configurar la API Key de Google Maps en el archivo correspondiente.
 
 Ejecutar la aplicación en un emulador o dispositivo físico.
 
-Estructura del Proyecto
-app/
-└── src/
-└── main/
-├── java/mx/edu/utng/pal/gestorderesiduosurbanos/
-│   ├── ui/        (pantallas y navegación)
-│   ├── model/     (modelos de datos)
-│   ├── utils/     (funciones utilitarias)
-│   └── data/      (si se implementan repositorios)
-└── res/
-├── layout/
-├── values/
-└── drawable/
-docs/
-└── screenshots/
 
 Ejemplos de Código Documentado
 Ejemplo 1: Modelo Documentado

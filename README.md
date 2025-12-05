@@ -72,7 +72,8 @@ Dependencias Principales
 com.google.android.gms:play-services-maps
 com.google.android.material:material
 
-
+Imagenes de pantallas 
+/docs/screenshots
 
 Instrucciones de Instalación
 Requisitos Previos

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "59836248594",
+    "project_id": "gestorderesiduos-8318a",
+    "storage_bucket": "gestorderesiduos-8318a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59836248594:android:d04a48548cb8abc9c3decb",
+        "android_client_info": {
+          "package_name": "mx.edu.utng.pal.gestorderesiduosurbanos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrDbhkcbUg5SUybDYUj1FVGhKkeDM_kLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

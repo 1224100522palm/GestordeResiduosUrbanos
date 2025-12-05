@@ -3,16 +3,15 @@ Gestor de Residuos Urbanos
 Aplicación móvil Android para el registro, consulta y análisis de reportes relacionados con residuos urbanos dentro de una comunidad.
 
 
-Descripción del Proyecto
+📌 Descripción del Proyecto
 
-Gestor de Residuos Urbanos es una aplicación móvil desarrollada para facilitar la captura y visualización de reportes relacionados con desechos en zonas urbanas. La aplicación permite identificar puntos críticos mediante Google Maps, consultar reportes existentes y revisar estadísticas que apoyan la toma de decisiones ambientales.
+Gestor de Residuos Urbanos es una aplicación móvil desarrollada para facilitar la captura, consulta y análisis de reportes relacionados con desechos urbanos. La aplicación permite visualizar puntos críticos mediante Google Maps, consultar reportes registrados, revisar horarios de recolección, recibir avisos municipales y generar estadísticas que apoyan la toma de decisiones ambientales.
 
-El sistema está construido con una arquitectura modular que separa la interfaz de usuario, la capa de datos, las utilidades y los servicios externos. Esto permite que la aplicación sea más escalable, mantenible y fácil de extender. La integración con Google Maps SDK permite mostrar información georreferenciada de forma clara y precisa.
+El proyecto implementa una arquitectura modular, separando la interfaz de usuario, la capa de datos, las utilidades y los servicios externos. Esto garantiza que el sistema sea escalable, mantenible y fácil de extender. La integración con Google Maps SDK permite representar información georreferenciada de manera clara y precisa.
 
-Este proyecto forma parte de la Unidad 4: Publicación de Aplicaciones Móviles, cuyo objetivo es documentar adecuadamente la app, preparar un repositorio profesional, implementar un proceso de publicación y validar la usabilidad con usuarios reales.
+Este proyecto forma parte de la Unidad 4: Publicación de Aplicaciones Móviles, cuyo propósito es documentar correctamente la app, preparar un repositorio profesional, establecer un proceso de publicación y validar su funcionamiento con usuarios reales.
 
-
-Características Principales
+⭐ Características Principales
 
 Visualización de reportes en un mapa mediante Google Maps SDK.
 
@@ -20,78 +19,84 @@ Consulta detallada de reportes registrados.
 
 Pantalla de estadísticas con información organizada.
 
-Navegación mediante Activities estructuradas.
+Navegación mediante Activities.
 
 Modelos de datos reutilizables y documentados.
 
-Funciones utilitarias para validaciones y formatos.
+Funciones utilitarias para validaciones, formatos y cálculos.
 
-
-Tecnologías Utilizadas
+🧰 Tecnologías Utilizadas
 Lenguaje y Plataforma
 
 Kotlin
 
-Android Studio (IDE)
+Android Studio
 
-Android SDK (API 21 o superior)
+Android SDK (API 21+)
 
+Arquitectura
 
-Arquitectura y Componentes
-
-Activities y ViewModels 
-
+Activities y ViewModels
 
 Paquetes organizados en:
 
 ui/ → Pantallas y controladores
 
-model/ → Clases modelo y entidades
+model/ → Clases modelo
 
 utils/ → Funciones auxiliares
 
-network/ → API Client y consumo de servicios externos
-
+network/ → Cliente API y servicios externos
 
 Servicios Externos
 
 Google Maps SDK for Android
 
-API externa o Backend REST (si aplica)
+API externa / Backend REST (si aplica)
 
-Firebase
-
+Firebase:
 
 Authentication
 
-Firestore / Realtime Database
+Firestore Database
 
 Analytics
 
 Dependencias Principales
 com.google.android.gms:play-services-maps
 com.google.android.material:material
+com.google.firebase:firebase-auth-ktx
+com.google.firebase:firebase-firestore-ktx
 
-Imagenes de pantallas 
+🖼️ Imágenes de Pantallas
+
+Las imágenes se encuentran en:
+
 /docs/screenshots
 
-Instrucciones de Instalación
+![Mapa de Botes](docs/screenshots/botes.jpg)
+![Avisos](docs/screenshots/avisos.jpg)
+![Reportes](docs/screenshots/Reportes.jpg)
+![Lista de Botes](docs/screenshots/botesUrb.jpg)
+![Horarios](docs/screenshots/horarios.jpg)
+![Perfil](docs/screenshots/perfil7.jpg)
+
+🛠 Instrucciones de Instalación
 Requisitos Previos
 
-Tener Android Studio instalado en su versión actual.
+Android Studio actualizado
 
-Contar con Android SDK configurado (API 21 o superior).
+Android SDK API 21 o superior
 
-Usar un dispositivo o emulador con Google Play Services.
+Emulador o dispositivo con Google Play Services
 
-Configurar una API Key de Google Maps en los archivos:
+API Key configurada en:
 
-app/src/debug/res/values/google_maps_api.xml
+app/src/debug/res/values/google_maps_api.xml  
 app/src/release/res/values/google_maps_api.xml
 
-Pasos de Instalación
 1. Clonar el repositorio
-git clone https://github.com/TU-USUARIO/gestor-residuos-urbanos.git
+git clone https://github.com/1224100522palm/GestordeResiduosUrbanos.git
 
 2. Abrir el proyecto en Android Studio
 
@@ -101,42 +106,38 @@ Seleccionar la carpeta del proyecto
 
 3. Configurar API Key de Google Maps
 
-Insertar tu clave en los archivos correspondientes:
+Insertar tu clave en ambos archivos:
 
 <string name="google_maps_key">TU_API_KEY_AQUI</string>
 
-4. Ejecutar la aplicación
+4. Ejecutar la app
+Opción A — Emulador
 
-Opción A: Emulador Android
-
-Crear un dispositivo virtual con Google Play Services
+Crear dispositivo virtual con Google Play Services
 
 Seleccionarlo
 
-Presionar el botón Run
+Presionar Run
 
-Opción B: Dispositivo físico
+Opción B — Dispositivo físico
 
 Activar Depuración USB
 
 Conectar por cable
 
-Aceptar permisos
+Autorizar PC
 
 Presionar Run
 
-5. Compilación manual (opcional)
-
-Generar un APK debug:
-
+5. Generar APK (opcional)
 Build → Build APK(s)
 
-El archivo se generará en:
+
+APK generado en:
 
 app/build/outputs/apk/debug/app-debug.apk
 
-Estructura del Proyecto
-
+📂 Estructura del Proyecto
 GestorResiduosUrbanos/
 
 ├── app/
@@ -149,37 +150,13 @@ GestorResiduosUrbanos/
 
 │           │   ├── ui/
 
-│           │   │   ├── actividades y pantallas
-
-│           │   │   └── navegación
-
 │           │   ├── model/
-
-│           │   │   ├── clases modelo
-
-│           │   │   └── entidades
 
 │           │   ├── utils/
 
-│           │   │   ├── funciones auxiliares
-
-│           │   │   ├── validaciones
-
-│           │   │   └── formateadores
-
 │           │   └── network/
 
-│           │       ├── clases para comunicación API
-
-│           │       └── configuración de cliente de red
-
 │           ├── res/
-
-│           │   ├── layout/
-
-│           │   ├── values/
-
-│           │   └── drawable/
 
 │           └── AndroidManifest.xml
 
@@ -197,14 +174,10 @@ GestorResiduosUrbanos/
 
 └── build.gradle
 
-
-Ejemplos de Código Documentado (KDoc)
+📘 Código Documentado (KDoc)
 Modelo
 /**
  * Representa un reporte dentro del sistema de gestión de residuos.
- *
- * Esta clase modela la información que un usuario registra cuando reporta
- * un punto de residuos en la ciudad.
  *
  * @property id Identificador único del reporte.
  * @property descripcion Texto descriptivo del incidente.
@@ -241,7 +214,7 @@ class StatsActivity : AppCompatActivity() {
     }
 }
 
-Archivo .gitignore
+📄 Archivo .gitignore
 .gradle/
 build/
 **/build/
@@ -263,10 +236,10 @@ Thumbs.db
 *.swp
 *.lock
 
-Video de Demostración
+🎥 Video de Demostración
 
 https://www.youtube.com/watch?v=By6weXnRxCg
 
-Licencia
+📜 Licencia
 
-Proyecto desarrollado con fines educativos para la Universidad Tecnológica del Norte de Guanajuato dentro de la asignatura Aplicaciones Móviles – Unidad IV.
+Proyecto desarrollado con fines educativos para la Universidad Tecnológica del Norte de Guanajuato, dentro de la asignatura de Aplicaciones Móviles – Unidad IV.

@@ -1,153 +1,271 @@
 Gestor de Residuos Urbanos
 
-El proyecto Gestor de Residuos Urbanos es una aplicación móvil Android cuyo propósito es facilitar el registro, visualización y análisis de reportes relacionados con residuos urbanos dentro de una comunidad. La aplicación permite a los usuarios consultar reportes, visualizar su ubicación mediante Google Maps y revisar estadísticas generadas a partir de los datos almacenados.
-
-Este proyecto se desarrolló como parte de la Unidad 4: Publicación de Aplicaciones Móviles, con la finalidad de aprender el proceso completo para documentar, preparar y distribuir una aplicación Android lista para su publicación.
+Aplicación móvil Android para el registro, consulta y análisis de reportes relacionados con residuos urbanos dentro de una comunidad.
 
 
 Descripción del Proyecto
 
-El sistema está organizado con una estructura modular que separa la interfaz, los modelos de datos y las funciones utilitarias. A través de una navegación basada en Activities, el usuario puede explorar mapas, revisar reportes, analizar estadísticas y consultar información detallada de los puntos de residuos.
+Gestor de Residuos Urbanos es una aplicación móvil desarrollada para facilitar la captura y visualización de reportes relacionados con desechos en zonas urbanas. La aplicación permite identificar puntos críticos mediante Google Maps, consultar reportes existentes y revisar estadísticas que apoyan la toma de decisiones ambientales.
 
-El proyecto integra servicios externos como Google Maps SDK, y fue construido siguiendo buenas prácticas de documentación, estructura de carpetas y uso de modelos de datos reutilizables.
+El sistema está construido con una arquitectura modular que separa la interfaz de usuario, la capa de datos, las utilidades y los servicios externos. Esto permite que la aplicación sea más escalable, mantenible y fácil de extender. La integración con Google Maps SDK permite mostrar información georreferenciada de forma clara y precisa.
+
+Este proyecto forma parte de la Unidad 4: Publicación de Aplicaciones Móviles, cuyo objetivo es documentar adecuadamente la app, preparar un repositorio profesional, implementar un proceso de publicación y validar la usabilidad con usuarios reales.
 
 
 Características Principales
 
-Visualización de reportes en un mapa utilizando Google Maps.
+Visualización de reportes en un mapa mediante Google Maps SDK.
 
-Lista de reportes con información relevante.
+Consulta detallada de reportes registrados.
 
-Pantalla de estadísticas con datos resumidos.
+Pantalla de estadísticas con información organizada.
 
-Navegación entre actividades de manera sencilla.
+Navegación mediante Activities estructuradas.
 
-Estructura de modelos clara y organizada.
+Modelos de datos reutilizables y documentados.
 
-Funciones utilitarias para manejo de fechas y validaciones.
-
-
-Capturas de Pantalla
-
-Las capturas se deben colocar en la carpeta:
-
-docs/screenshots/
-
-
-Ejemplos recomendados:
-
-docs/screenshots/home.png
-
-docs/screenshots/mapa.png
-
-docs/screenshots/reportes.png
+Funciones utilitarias para validaciones y formatos.
 
 
 Tecnologías Utilizadas
+Lenguaje y Plataforma
 
-Lenguaje: Kotlin
+Kotlin
 
-IDE: Android Studio.
+Android Studio (IDE)
 
-Android SDK API 21 o superior.
+Android SDK (API 21 o superior)
 
-Servicios externos usados:
+
+Arquitectura y Componentes
+
+Activities y ViewModels 
+
+
+Paquetes organizados en:
+
+ui/ → Pantallas y controladores
+
+model/ → Clases modelo y entidades
+
+utils/ → Funciones auxiliares
+
+network/ → API Client y consumo de servicios externos
+
+
+Servicios Externos
 
 Google Maps SDK for Android
 
-Firebase 
+API externa o Backend REST (si aplica)
+
+Firebase
 
 
-Instalación y Ejecución
-Requisitos Previos
+Authentication
 
-Android Studio instalado.
+Firestore / Realtime Database
 
-Dispositivo físico o emulador con Google Play Services activo.
+Analytics
 
-API Key de Google Maps configurada en los archivos:
-app/src/debug/res/values/google_maps_api.xml
-app/src/release/res/values/google_maps_api.xml
+Dependencias Principales
+com.google.android.gms:play-services-maps
+com.google.android.material:material
+
 
 
 Instrucciones de Instalación
+Requisitos Previos
 
-Clonar el repositorio:
+Tener Android Studio instalado en su versión actual.
 
+Contar con Android SDK configurado (API 21 o superior).
+
+Usar un dispositivo o emulador con Google Play Services.
+
+Configurar una API Key de Google Maps en los archivos:
+
+app/src/debug/res/values/google_maps_api.xml
+app/src/release/res/values/google_maps_api.xml
+
+Pasos de Instalación
+1. Clonar el repositorio
 git clone https://github.com/TU-USUARIO/gestor-residuos-urbanos.git
 
+2. Abrir el proyecto en Android Studio
 
-Abrir el proyecto en Android Studio.
+File → Open
 
-Configurar la API Key de Google Maps en el archivo correspondiente.
+Seleccionar la carpeta del proyecto
 
-Ejecutar la aplicación en un emulador o dispositivo físico.
+3. Configurar API Key de Google Maps
+
+Insertar tu clave en los archivos correspondientes:
+
+<string name="google_maps_key">TU_API_KEY_AQUI</string>
+
+4. Ejecutar la aplicación
+
+Opción A: Emulador Android
+
+Crear un dispositivo virtual con Google Play Services
+
+Seleccionarlo
+
+Presionar el botón Run
+
+Opción B: Dispositivo físico
+
+Activar Depuración USB
+
+Conectar por cable
+
+Aceptar permisos
+
+Presionar Run
+
+5. Compilación manual (opcional)
+
+Generar un APK debug:
+
+Build → Build APK(s)
+
+El archivo se generará en:
+
+app/build/outputs/apk/debug/app-debug.apk
+
+Estructura del Proyecto
+
+GestorResiduosUrbanos/
+
+├── app/
+
+│   └── src/
+
+│       └── main/
+
+│           ├── java/mx/edu/utng/pal/gestorderesiduosurbanos/
+
+│           │   ├── ui/
+
+│           │   │   ├── actividades y pantallas
+
+│           │   │   └── navegación
+
+│           │   ├── model/
+
+│           │   │   ├── clases modelo
+
+│           │   │   └── entidades
+
+│           │   ├── utils/
+
+│           │   │   ├── funciones auxiliares
+
+│           │   │   ├── validaciones
+
+│           │   │   └── formateadores
+
+│           │   └── network/
+
+│           │       ├── clases para comunicación API
+
+│           │       └── configuración de cliente de red
+
+│           ├── res/
+
+│           │   ├── layout/
+
+│           │   ├── values/
+
+│           │   └── drawable/
+
+│           └── AndroidManifest.xml
+
+│
+
+├── docs/
+
+│   └── screenshots/
+
+│
+
+├── README.md
+
+├── .gitignore
+
+└── build.gradle
 
 
-Ejemplos de Código Documentado
-Ejemplo 1: Modelo Documentado
+Ejemplos de Código Documentado (KDoc)
+Modelo
 /**
-* Representa un reporte registrado en la aplicación.
-*
-* @param id Identificador único del reporte.
-* @param descripcion Descripción del incidente.
-* @param fecha Fecha en la que se generó el reporte.
-* @param latitud Coordenada de latitud de la ubicación del reporte.
-* @param longitud Coordenada de longitud correspondiente.
-  */
-  public class Reporte {
-  private int id;
-  private String descripcion;
-  private String fecha;
-  private double latitud;
-  private double longitud;
+ * Representa un reporte dentro del sistema de gestión de residuos.
+ *
+ * Esta clase modela la información que un usuario registra cuando reporta
+ * un punto de residuos en la ciudad.
+ *
+ * @property id Identificador único del reporte.
+ * @property descripcion Texto descriptivo del incidente.
+ * @property fecha Fecha en formato ISO (YYYY-MM-DD).
+ * @property latitud Latitud asociada al reporte.
+ * @property longitud Longitud asociada al reporte.
+ */
+data class Reporte(
+    val id: Int,
+    val descripcion: String,
+    val fecha: String,
+    val latitud: Double,
+    val longitud: Double
+)
 
-  public Reporte(int id, String descripcion, String fecha, double latitud, double longitud) {
-  this.id = id;
-  this.descripcion = descripcion;
-  this.fecha = fecha;
-  this.latitud = latitud;
-  this.longitud = longitud;
-  }
-  }
-
-Ejemplo 2: Activity Documentada
+Activity
 /**
-* Activity que muestra estadísticas relacionadas con los reportes de residuos.
-* Recupera los datos desde una fuente y los presenta en pantalla.
-  */
-  public class StatsActivity extends AppCompatActivity {
+ * Activity encargada de mostrar estadísticas relacionadas con los reportes.
+ */
+class StatsActivity : AppCompatActivity() {
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-  super.onCreate(savedInstanceState);
-  setContentView(R.layout.activity_stats);
-  cargarEstadisticas();
-  }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_stats)
+        cargarEstadisticas()
+    }
 
-  /**
-    * Carga y muestra los valores estadísticos relevantes.
-      */
-      private void cargarEstadisticas() {
-      // Implementación futura
-      }
-      }
+    /**
+     * Recupera valores estadísticos desde la capa de datos
+     * y actualiza la interfaz visual.
+     */
+    private fun cargarEstadisticas() {
+        // Implementación pendiente
+    }
+}
 
-Información del Proyecto
+Archivo .gitignore
+.gradle/
+build/
+**/build/
+local.properties
+.idea/
+*.iml
+*.log
+*.jks
+*.keystore
+captures/
+output.json
+app/release/
+app/debug/
+*.apk
+*.aab
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.lock
 
-Autor: Paulina López y Alan Ortega
+Video de Demostración
 
-Institución: Universidad Tecnológica del Norte de Guanajuato
+https://www.youtube.com/watch?v=By6weXnRxCg
 
-Materia: Desarrollo de Aplicaciones Móviles
+Licencia
 
-Unidad 4: Publicación de Aplicaciones
-
-
-Estado del Proyecto
-
-README completo
-
-Código documentado
-
-Archivo .gitignore configuradoo
+Proyecto desarrollado con fines educativos para la Universidad Tecnológica del Norte de Guanajuato dentro de la asignatura Aplicaciones Móviles – Unidad IV.

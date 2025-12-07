@@ -49,135 +49,154 @@ En cuanto a la visualización geográfica, se integró Google Maps SDK for Andro
 Además, la aplicación hace uso de componentes clave de Android Jetpack, como ViewModel, LiveData/StateFlow, coroutines y navegación por pantallas, lo que asegura una arquitectura organizada, con separación de responsabilidades y capacidad para escalar a nuevas funcionalidades. Finalmente, para persistencia local y manejo de sesión, se implementaron SharedPreferences, permitiendo recordar datos del usuario, rol y ajustes internos sin necesidad de acceder constantemente a la base de datos. En conjunto, estas tecnologías garantizan que Gestor de Residuos Urbanos sea una aplicación moderna, estable, rápida, segura y preparada para crecer con nuevas funciones en futuras versiones.
 
 
+#  Gestor de Residuos Urbanos - Manual Completo
+## Android con Jetpack Compose + Firebase
 
-# Gestor de Residuos Urbanos (Android – Jetpack Compose + Firebase)
+> **Manual profesional para estudiantes de desarrollo móvil**
 
-Aplicación Android para la **gestión de residuos urbanos** que integra:
 
-- Autenticación con Firebase Authentication
-- Gestión de botes (lista, registro, edición) en Firestore
-- Mapa de botes de basura (vista general)
-- Avisos municipales y de la comunidad
-- Reportes de incidencias
-- Registro de horarios de recolección
-- Pantallas de registro (botes, avisos, horarios, reportes)
+---
 
+##  Arquitectura del Proyecto
+
+```
 GestordeResiduosUrbanos/
-├─ settings.gradle.kts
-├─ build.gradle.kts
-└─ app/
-   ├─ build.gradle.kts
-   └─ src/
-      └─ main/
-         ├─ AndroidManifest.xml
-         ├─ java/
-         │  └─ mx/edu/utng/pal/gestorderesiduosurbanos/
-         │     ├─ data/
-         │     │  ├─ Aviso.kt
-         │     │  ├─ Bote.kt
-         │     │  ├─ Reporte.kt
-         │     │  ├─ Usuario.kt
-         │     │  ├─ Horarios.kt
-         │     │  ├─ AvisoRepository.kt
-         │     │  ├─ BoteRepository.kt
-         │     │  ├─ ReporteRepository.kt
-         │     │  └─ HorariosRepository.kt
-         │     │
-         │     └─ ui/
-         │        ├─ LoginActivity.kt
-         │        ├─ RegistroActivity.kt
-         │        ├─ MainActivity.kt
-         │        ├─ PantallaMapaActivity.kt
-         │        ├─ PantallaBotesActivity.kt
-         │        ├─ PantallaAvisoActivity.kt
-         │        ├─ PantallaReportesActivity.kt
-         │        ├─ PantallaRegistroBoteActivity.kt
-         │        ├─ PantallaRegistroAvisoActivity.kt
-         │        ├─ PantallaRegistroHorarioActivity.kt
-         │        └─ PantallaRegistroReporteActivity.kt
-         │
-         └─ res/
-            ├─ layout/
-            ├─ values/
-            │  ├─ colors.xml
-            │  ├─ themes.xml
-            │  └─ strings.xml
-            └─ mipmap-*/
-1. Modelos de datos (data/)
-1.1. Aviso.kt
-kotlin
-Copiar código
+├─ app/
+│  ├─ data/
+│  │  ├─ Aviso.kt
+│  │  ├─ Bote.kt
+│  │  ├─ Reporte.kt
+│  │  ├─ Usuario.kt
+│  │  ├─ Horarios.kt
+│  │  └─ Repositories/
+│  └─ ui/
+│     ├─ auth/
+│     │  ├─ LoginActivity.kt
+│     │  └─ RegistroActivity.kt
+│     ├─ main/
+│     │  ├─ MainActivity.kt
+│     │  ├─ PantallaMapaActivity.kt
+│     │  ├─ PantallaBotesActivity.kt
+│     │  ├─ PantallaAvisoActivity.kt
+│     │  └─ PantallaReportesActivity.kt
+│     └─ registro/
+│        ├─ PantallaRegistroBoteActivity.kt
+│        ├─ PantallaRegistroAvisoActivity.kt
+│        ├─ PantallaRegistroHorarioActivity.kt
+│        └─ PantallaRegistroReporteActivity.kt
+```
+
+---
+
+## 🔧 Configuración Inicial
+
+### build.gradle.kts (Module: app)
+
+```kotlin
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+}
+
+android {
+    namespace = "mx.edu.utng.pal.gestorderesiduosurbanos"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "mx.edu.utng.pal.gestorderesiduosurbanos"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.0"
+    }
+}
+
+dependencies {
+    // Compose
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
+    implementation(composeBom)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.activity:activity-compose:1.8.2")
+    
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    
+    // Google Maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.maps.android:maps-compose:4.3.0")
+    
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+}
+```
+
+---
+
+## 📦 Modelos de Datos
+
+### Aviso.kt
+
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.data
 
 /**
- * Representa un aviso o comunicado dentro del sistema de gestión de residuos urbanos.
- *
- * Esta clase modela los datos principales que se muestran en la lista de avisos y
- * que se almacenan en Firebase Firestore.
- *
- * @property id Identificador único del aviso (ID del documento en Firestore).
- * @property titulo Título breve que resume el contenido del aviso.
- * @property descripcion Descripción más detallada del aviso.
- * @property fecha Fecha en la que se creó o publicó el aviso.
- * @property tipo Tipo de aviso (informativo, emergencia, comunidad, municipio, etc.).
- * @property colonia Colonia o zona a la que va dirigido el aviso.
- * @property creadoPor Identificador o correo del usuario/administrador que creó el aviso.
+ * Modelo de datos para avisos municipales
+ * 
+ * Analogía: Como un anuncio en el tablón de la comunidad
  */
 data class Aviso(
     val id: String = "",
     val titulo: String = "",
     val descripcion: String = "",
     val fecha: String = "",
-    val tipo: String = "",
+    val tipo: String = "", // Información, Alerta, Recordatorio
     val colonia: String = "",
     val creadoPor: String = ""
 )
-1.2. Bote.kt
-kotlin
-Copiar código
+```
+
+### Bote.kt
+
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.data
 
 /**
- * Representa un contenedor de residuos (bote) dentro de la aplicación.
- *
- * Se utiliza tanto para mostrar información en listas como en el mapa, y
- * para registrar su ubicación geográfica.
- *
- * @property id Identificador único del bote (documento en Firestore).
- * @property colonia Colonia o zona donde se ubica el bote.
- * @property tipoResiduo Tipo de residuo que admite (orgánico, inorgánico, reciclable, etc.).
- * @property estado Estado actual del bote (lleno, vacío, reportado, en mantenimiento, etc.).
- * @property lat Latitud de la ubicación del bote (para Google Maps).
- * @property lng Longitud de la ubicación del bote (para Google Maps).
+ * Modelo de datos para contenedores de residuos
+ * 
+ * Analogía: Como un punto de servicio en tu ciudad
  */
 data class Bote(
     val id: Any? = "",
     val colonia: String = "",
-    val tipoResiduo: String = "",
-    val estado: String = "",
+    val tipoResiduo: String = "", // Orgánico, Inorgánico, Reciclable
+    val estado: String = "", // Vacío, Medio, Lleno, Mantenimiento
     val lat: Double = 0.0,
     val lng: Double = 0.0
 )
-1.3. Reporte.kt
-kotlin
-Copiar código
+```
+
+### Reporte.kt
+
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.data
 
 /**
- * Modela un reporte de incidencias relacionado con los botes de residuos.
- *
- * Cada reporte permite a los usuarios informar problemas como botes llenos,
- * desbordamientos, daño al contenedor, entre otros.
- *
- * @property id Identificador interno del reporte.
- * @property usuario Usuario o correo que generó el reporte.
- * @property bote ID del bote al que está asociado el reporte.
- * @property colonia Colonia donde se encuentra el bote y ocurre la incidencia.
- * @property tipo Tipo de incidencia reportada.
- * @property descripcion Descripción detallada del problema observado.
- * @property fecha Fecha de creación del reporte.
- * @property estado Estado actual del reporte (pendiente, en proceso, atendido, etc.).
- * @property firebaseId Identificador del documento en Firestore (si se usa de forma explícita).
+ * Modelo de datos para reportes de incidencias
+ * 
+ * Analogía: Como una solicitud de servicio municipal
  */
 data class Reporte(
     val id: String = "",
@@ -187,15 +206,18 @@ data class Reporte(
     val tipo: String = "",
     val descripcion: String = "",
     val fecha: String = "",
-    val estado: String = "",
+    val estado: String = "", // Pendiente, En Proceso, Resuelto
     val firebaseId: String = ""
 )
-(…y así con Usuario.kt, Horarios.kt, siguiendo el mismo patrón de documentación.)
+```
 
-2. Repositorios (acceso a Firestore)
-2.1. AvisoRepository.kt
-kotlin
-Copiar código
+---
+
+## 🗄️ Repositorios
+
+### AvisoRepository.kt
+
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.data
 
 import com.google.firebase.firestore.FirebaseFirestore
@@ -205,81 +227,71 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 /**
- * Repositorio encargado de gestionar todas las operaciones sobre la colección
- * "avisos" en Firebase Firestore.
- *
- * Implementa un enfoque reactivo mediante [Flow] para escuchar cambios
- * en tiempo real y funciones `suspend` para operaciones puntuales.
+ * Repositorio para gestionar avisos
+ * 
+ * Patrón Repository: Abstrae el acceso a datos
+ * Beneficios:
+ * - Única fuente de verdad
+ * - Fácil de testear
+ * - Desacoplamiento de la UI
  */
 class AvisoRepository {
 
-    /** Instancia de Firestore utilizada por el repositorio. */
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-    /** Referencia directa a la colección "avisos". */
+    private val db = FirebaseFirestore.getInstance()
     private val ref = db.collection("avisos")
 
     /**
-     * Devuelve un flujo que emite la lista completa de avisos cada vez que
-     * ocurre un cambio en la colección de Firestore.
-     *
-     * @return [Flow] de listas de [Aviso].
+     * Obtiene avisos en tiempo real
+     * 
+     * Flow: Emisión continua de datos
+     * Se actualiza automáticamente cuando cambia Firestore
      */
     fun getAvisosFlow(): Flow<List<Aviso>> = callbackFlow {
-        val listener = ref.addSnapshotListener { snapshot, _ ->
-            if (snapshot != null) {
-                trySend(snapshot.toObjects(Aviso::class.java))
+        val listener = ref.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            snapshot?.let {
+                trySend(it.toObjects(Aviso::class.java))
             }
         }
         awaitClose { listener.remove() }
     }
 
     /**
-     * Inserta un nuevo aviso en la colección.
-     *
-     * Se genera un ID automático en Firestore y se asigna al campo [Aviso.id].
-     *
-     * @param aviso Aviso a registrar.
+     * Inserta un nuevo aviso
+     * 
+     * suspend: Función asíncrona
+     * No bloquea el hilo principal
      */
     suspend fun insert(aviso: Aviso) {
         val doc = ref.document()
-        val nuevoAviso = aviso.copy(id = doc.id)
-        doc.set(nuevoAviso).await()
+        val nuevo = aviso.copy(id = doc.id)
+        doc.set(nuevo).await()
     }
 
-    /**
-     * Actualiza un aviso existente sobrescribiendo su documento completo
-     * en Firestore.
-     *
-     * @param aviso Aviso con los datos actualizados.
-     */
     suspend fun update(aviso: Aviso) {
         ref.document(aviso.id).set(aviso).await()
     }
 
-    /**
-     * Elimina el documento asociado al aviso proporcionado.
-     *
-     * @param aviso Aviso a eliminar de la base de datos.
-     */
     suspend fun delete(aviso: Aviso) {
         ref.document(aviso.id).delete().await()
     }
 
-    /**
-     * Obtiene un aviso a partir de su identificador de documento.
-     *
-     * @param id ID del documento en Firestore.
-     * @return El aviso encontrado o `null` si no existe.
-     */
     suspend fun getById(id: String): Aviso? {
         return ref.document(id).get().await().toObject(Aviso::class.java)
     }
 }
-3. Pantallas de Autenticación
-3.1. LoginActivity.kt (Activity + Composable)
-kotlin
-Copiar código
+```
+
+---
+
+##  Autenticación
+
+### LoginActivity.kt
+
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -293,23 +305,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 /**
- * Activity principal de autenticación.
- *
- * Muestra la pantalla de inicio de sesión utilizando Jetpack Compose.
- * Si el usuario se autentica correctamente, se navega hacia [MainActivity].
+ * Pantalla de inicio de sesión
+ * 
+ * Flujo:
+ * 1. Usuario ingresa credenciales
+ * 2. Firebase Authentication valida
+ * 3. Guardar sesión en SharedPreferences
+ * 4. Navegar a MainActivity
  */
 class LoginActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -318,181 +331,14 @@ class LoginActivity : ComponentActivity() {
     }
 }
 
-/**
- * Composable que construye la interfaz de la pantalla de inicio de sesión.
- *
- * Esta pantalla permite al usuario introducir sus credenciales de acceso
- * y valida la autenticación contra Firebase Authentication.
- */
 @Composable
 fun PantallaLogin() {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-    var correo by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color(0xFFE8F0E8)
-    ) { padding ->
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp)
-        ) {
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Text(
-                    text = "Gestor de Residuos Urbanos",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF446247),
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                OutlinedTextField(
-                    value = correo,
-                    onValueChange = { correo = it },
-                    label = { Text("Correo electrónico") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                OutlinedTextField(
-                    value = contrasena,
-                    onValueChange = { contrasena = it },
-                    label = { Text("Contraseña") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                Button(
-                    onClick = {
-                        scope.launch {
-                            if (correo.isBlank() || contrasena.isBlank()) {
-                                snackbarHostState.showSnackbar("Completa todos los campos")
-                            } else {
-                                auth.signInWithEmailAndPassword(correo, contrasena)
-                                    .addOnSuccessListener {
-                                        val prefs = context.getSharedPreferences(
-                                            "sesion",
-                                            Activity.MODE_PRIVATE
-                                        )
-                                        prefs.edit()
-                                            .putString("usuario_correo", correo)
-                                            .apply()
-
-                                        context.startActivity(
-                                            Intent(context, MainActivity::class.java)
-                                        )
-                                    }
-                                    .addOnFailureListener {
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar(
-                                                "Error de autenticación"
-                                            )
-                                        }
-                                    }
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF446247),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text("Iniciar sesión")
-                }
-
-                TextButton(
-                    onClick = {
-                        context.startActivity(
-                            Intent(context, RegistroActivity::class.java)
-                        )
-                    }
-                ) {
-                    Text("¿No tienes cuenta? Regístrate")
-                }
-            }
-        }
-    }
-}
-3.2. RegistroActivity.kt
-kotlin
-Copiar código
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
-
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
-import mx.edu.utng.pal.gestorderesiduosurbanos.data.Usuario
-
-/**
- * Activity encargada del registro de nuevos usuarios.
- *
- * Crea cuentas en Firebase Authentication y registra la información del
- * usuario en la colección "usuarios" de Firestore.
- */
-class RegistroActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            PantallaRegistro()
-        }
-    }
-}
-
-/**
- * Composable que muestra el formulario de registro de usuario.
- *
- * Permite capturar nombre, correo y contraseña, y realiza el alta
- * del usuario utilizando Firebase.
- */
-@Composable
-fun PantallaRegistro() {
-    val context = androidx.compose.ui.platform.LocalContext.current
-
+    val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
-
-    var nombre by remember { mutableStateOf("") }
+    
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
-
+    
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -500,244 +346,107 @@ fun PantallaRegistro() {
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color(0xFFE8F0E8)
     ) { padding ->
-
+        
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-
+            
+            // Título
             Text(
-                text = "Crear cuenta",
+                text = "Gestor de Residuos Urbanos",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF446247)
             )
-
-            Spacer(Modifier.height(24.dp))
-
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = { nombre = it },
-                label = { Text("Nombre completo") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(8.dp))
-
+            
+            Spacer(Modifier.height(32.dp))
+            
+            // Campo de correo
             OutlinedTextField(
                 value = correo,
                 onValueChange = { correo = it },
-                label = { Text("Correo") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Correo electrónico") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
-
-            Spacer(Modifier.height(8.dp))
-
+            
+            Spacer(Modifier.height(16.dp))
+            
+            // Campo de contraseña
             OutlinedTextField(
                 value = contrasena,
                 onValueChange = { contrasena = it },
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
                 visualTransformation = PasswordVisualTransformation()
             )
-
+            
             Spacer(Modifier.height(24.dp))
-
+            
+            // Botón de inicio de sesión
             Button(
                 onClick = {
                     scope.launch {
-                        if (correo.isBlank() || contrasena.isBlank() || nombre.isBlank()) {
+                        if (correo.isBlank() || contrasena.isBlank()) {
                             snackbarHostState.showSnackbar("Completa todos los campos")
-                            return@launch
-                        }
-
-                        auth.createUserWithEmailAndPassword(correo, contrasena)
-                            .addOnSuccessListener { result ->
-                                val uid = result.user?.uid.orEmpty()
-                                val usuario = Usuario(
-                                    uid = uid,
-                                    correo = correo,
-                                    nombre = nombre,
-                                    rol = "usuario"
-                                )
-
-                                db.collection("usuarios")
-                                    .document(uid)
-                                    .set(usuario)
-
-                                context.startActivity(
-                                    Intent(context, LoginActivity::class.java)
-                                )
-                            }
-                            .addOnFailureListener {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Error al registrar usuario")
+                        } else {
+                            auth.signInWithEmailAndPassword(correo, contrasena)
+                                .addOnSuccessListener {
+                                    // Guardar sesión
+                                    val prefs = context.getSharedPreferences("sesion", Activity.MODE_PRIVATE)
+                                    prefs.edit().putString("usuario_correo", correo).apply()
+                                    
+                                    // Navegar
+                                    context.startActivity(Intent(context, MainActivity::class.java))
                                 }
-                            }
+                                .addOnFailureListener {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Error de autenticación")
+                                    }
+                                }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF446247),
-                    contentColor = Color.White
+                    containerColor = Color(0xFF446247)
                 )
             ) {
-                Text("Registrar")
+                Text("Iniciar sesión")
             }
-        }
-    }
-}
-4. MainActivity y Mapa
-4.1. MainActivity.kt
-kotlin
-Copiar código
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-
-/**
- * Activity principal posterior al login.
- *
- * Actualmente funciona como contenedor de la pantalla de mapa,
- * pero se podría extender para manejar navegación con NavHost.
- */
-class MainActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            PantallaMapa()
-        }
-    }
-}
-4.2. PantallaMapaActivity.kt + PantallaMapa
-kotlin
-Copiar código
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
-
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-/**
- * Activity encargada de mostrar la pantalla principal del mapa.
- *
- * Esta pantalla es la vista general donde se visualizan los botes
- * de residuos sobre un mapa (Google Maps u otra implementación).
- */
-class PantallaMapaActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            PantallaMapa()
-        }
-    }
-}
-
-/**
- * Composable que representa la pantalla de mapa.
- *
- * Aquí se puede integrar el componente de Google Maps y agregar marcadores
- * para cada [Bote] registrado en la base de datos.
- */
-@Composable
-fun PantallaMapa() {
-    val context = androidx.compose.ui.platform.LocalContext.current
-
-    Scaffold(
-        bottomBar = { BottomNavigationBarMapa() }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            Text(
-                text = "Mapa de Botes",
-                fontSize = 22.sp,
-                color = Color(0xFF446247),
-                modifier = Modifier.padding(16.dp)
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .background(Color(0xFFE0E0E0), RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Aquí se muestra el mapa con los botes")
-            }
-        }
-    }
-}
-
-/**
- * Barra de navegación inferior de la pantalla de mapa.
- *
- * Permite cambiar entre las diferentes secciones de la aplicación:
- * Mapa, Horarios, Botes, Reportes, Avisos y Perfil/Estadísticas.
- */
-@Composable
-fun BottomNavigationBarMapa() {
-    val context = androidx.compose.ui.platform.LocalContext.current
-
-    NavigationBar(
-        containerColor = Color(0xFFF8F8F8),
-        tonalElevation = 8.dp
-    ) {
-        val items = listOf(
-            Triple("Mapa", Icons.Default.LocationOn, PantallaMapaActivity::class.java),
-            Triple("Horarios", Icons.Default.Schedule, PantallaRegistroHorarioActivity::class.java),
-            Triple("Botes", Icons.Default.Delete, PantallaBotesActivity::class.java),
-            Triple("Reportes", Icons.Default.Report, PantallaReportesActivity::class.java),
-            Triple("Avisos", Icons.Default.Notifications, PantallaAvisoActivity::class.java),
-            Triple("Perfil", Icons.Default.Person, PantallaStatsActivity::class.java)
-        )
-
-        items.forEach { (title, icon, screen) ->
-            NavigationBarItem(
-                selected = title == "Mapa",
+            
+            // Enlace a registro
+            TextButton(
                 onClick = {
-                    if (title != "Mapa") {
-                        context.startActivity(Intent(context, screen))
-                    }
-                },
-                icon = { Icon(icon, contentDescription = title, tint = Color(0xFF3D5F40)) },
-                label = { Text(title, color = Color(0xFF3D5F40)) }
-            )
+                    context.startActivity(Intent(context, RegistroActivity::class.java))
+                }
+            ) {
+                Text("¿No tienes cuenta? Regístrate")
+            }
         }
     }
 }
-5. Pantalla de Botes (PantallaBotesActivity)
-kotlin
-Copiar código
+```
+
+---
+
+##  Pantallas Principales
+
+### PantallaBotesActivity.kt
+
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -748,78 +457,60 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
 import mx.edu.utng.pal.gestorderesiduosurbanos.data.Bote
 
 /**
- * Activity encargada de mostrar la lista de botes registrados.
- *
- * La información se obtiene en tiempo real desde la colección "botes"
- * de Firebase Firestore.
+ * Pantalla de lista de botes
+ * 
+ * Características:
+ * - Lista en tiempo real desde Firestore
+ * - Búsqueda por múltiples criterios
+ * - Navegación a detalle/edición
+ * - FAB para agregar nuevos botes
  */
 class PantallaBotesActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent { PantallaBotes() }
     }
 }
 
-/**
- * Composable principal de la pantalla de botes.
- *
- * Muestra:
- * - Buscador de botes por diferentes criterios.
- * - Lista de botes sincronizada con Firestore.
- * - Botón flotante para registrar nuevos botes.
- * - Barra de navegación inferior específica de la sección.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaBotes() {
     val context = LocalContext.current
     val db = FirebaseFirestore.getInstance()
-
+    
     var listaBotes by remember { mutableStateOf(listOf<Bote>()) }
     var busqueda by remember { mutableStateOf("") }
-
-    /**
-     * Escucha los cambios en tiempo real de la colección "botes".
-     * Cualquier inserción, borrado o actualización se refleja en la UI.
-     */
+    
+    // Listener en tiempo real
     DisposableEffect(Unit) {
         val listener = db.collection("botes")
-            .addSnapshotListener { snapshot, error ->
-                if (error == null && snapshot != null) {
-                    listaBotes = snapshot.toObjects(Bote::class.java)
+            .addSnapshotListener { snapshot, _ ->
+                snapshot?.let {
+                    listaBotes = it.toObjects(Bote::class.java)
                 }
             }
-
-        onDispose {
-            listener.remove()
-        }
+        onDispose { listener.remove() }
     }
-
+    
+    // Filtrado de búsqueda
     val listaFiltrada = remember(listaBotes, busqueda) {
         listaBotes.filter {
             it.id.toString().contains(busqueda, true) ||
-                    it.colonia.contains(busqueda, true) ||
-                    it.tipoResiduo.contains(busqueda, true) ||
-                    it.estado.contains(busqueda, true)
+            it.colonia.contains(busqueda, true) ||
+            it.tipoResiduo.contains(busqueda, true) ||
+            it.estado.contains(busqueda, true)
         }
     }
-
-    val gradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFFE8F0E8), Color(0xFFDDE7DD))
-    )
-
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -832,63 +523,46 @@ fun PantallaBotes() {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    context.startActivity(
-                        Intent(context, PantallaRegistroBoteActivity::class.java)
-                    )
+                    context.startActivity(Intent(context, PantallaRegistroBoteActivity::class.java))
                 },
                 containerColor = Color(0xFF446247)
             ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Agregar bote",
-                    tint = Color.White
-                )
+                Icon(Icons.Default.Add, "Agregar", tint = Color.White)
             }
         },
-        bottomBar = { BottomNavigationBarBotes() },
-        containerColor = Color.Transparent
+        bottomBar = { BottomNavigationBarBotes() }
     ) { padding ->
-        Box(
+        
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(gradient)
                 .padding(padding)
-                .padding(12.dp)
+                .padding(16.dp)
         ) {
-            Card(
-                modifier = Modifier.fillMaxSize(),
-                shape = RoundedCornerShape(18.dp),
-                elevation = CardDefaults.cardElevation(6.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-
-                    OutlinedTextField(
-                        value = busqueda,
-                        onValueChange = { busqueda = it },
-                        label = { Text("Buscar bote…") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(Modifier.height(16.dp))
-
-                    if (listaFiltrada.isEmpty()) {
-                        Text(
-                            "No hay botes registrados",
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    } else {
-                        LazyColumn(Modifier.fillMaxSize()) {
-                            items(listaFiltrada) { bote ->
-                                BoteItem(bote = bote)
-                            }
-                        }
+            
+            // Buscador
+            OutlinedTextField(
+                value = busqueda,
+                onValueChange = { busqueda = it },
+                label = { Text("Buscar bote...") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { Icon(Icons.Default.Search, null) },
+                singleLine = true
+            )
+            
+            Spacer(Modifier.height(16.dp))
+            
+            // Lista de botes
+            if (listaFiltrada.isEmpty()) {
+                Text(
+                    "No hay botes registrados",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn {
+                    items(listaFiltrada) { bote ->
+                        BoteItem(bote = bote)
                     }
                 }
             }
@@ -896,16 +570,10 @@ fun PantallaBotes() {
     }
 }
 
-/**
- * Representa una tarjeta individual de un bote dentro de la lista.
- *
- * Muestra los datos más importantes y permite navegar a la pantalla
- * de edición/registro de bote al hacer clic.
- */
 @Composable
 fun BoteItem(bote: Bote) {
     val context = LocalContext.current
-
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -915,262 +583,70 @@ fun BoteItem(bote: Bote) {
                 intent.putExtra("boteId", bote.id.toString())
                 context.startActivity(intent)
             },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF5F5F5)
+        ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 "ID: ${bote.id}",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF446247)
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF446247),
+                fontSize = 16.sp
             )
-            Text("Colonia: ${bote.colonia}")
-            Text("Residuo: ${bote.tipoResiduo}")
-            Text("Estado: ${bote.estado}")
-            Text("Lat: ${bote.lat}   Lng: ${bote.lng}")
+            Spacer(Modifier.height(4.dp))
+            Text("📍 Colonia: ${bote.colonia}")
+            Text("🗑️ Tipo: ${bote.tipoResiduo}")
+            Text("⚡ Estado: ${bote.estado}")
+            Text("🌍 Ubicación: ${bote.lat}, ${bote.lng}", fontSize = 12.sp)
         }
     }
 }
 
-/**
- * Barra de navegación inferior para la sección de botes.
- */
 @Composable
 fun BottomNavigationBarBotes() {
     val context = LocalContext.current
-
+    
     NavigationBar(
-        containerColor = Color(0xFFF8F8F8),
-        tonalElevation = 8.dp
+        containerColor = Color(0xFFF8F8F8)
     ) {
-        val items = listOf(
-            Triple("Mapa", Icons.Default.LocationOn, PantallaMapaActivity::class.java),
-            Triple("Horarios", Icons.Default.Schedule, PantallaRegistroHorarioActivity::class.java),
-            Triple("Botes", Icons.Default.Delete, PantallaBotesActivity::class.java),
-            Triple("Reportes", Icons.Default.Report, PantallaReportesActivity::class.java),
-            Triple("Avisos", Icons.Default.Notifications, PantallaAvisoActivity::class.java),
-            Triple("Perfil", Icons.Default.Person, PantallaStatsActivity::class.java)
+        NavigationBarItem(
+            selected = false,
+            onClick = { context.startActivity(Intent(context, PantallaMapaActivity::class.java)) },
+            icon = { Icon(Icons.Default.LocationOn, "Mapa") },
+            label = { Text("Mapa") }
         )
-
-        items.forEach { (title, icon, screen) ->
-            NavigationBarItem(
-                selected = title == "Botes",
-                onClick = {
-                    if (title != "Botes") {
-                        context.startActivity(Intent(context, screen))
-                    }
-                },
-                icon = { Icon(icon, contentDescription = title, tint = Color(0xFF3D5F40)) },
-                label = { Text(title, color = Color(0xFF3D5F40)) }
-            )
-        }
+        NavigationBarItem(
+            selected = true,
+            onClick = { },
+            icon = { Icon(Icons.Default.Delete, "Botes") },
+            label = { Text("Botes") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { context.startActivity(Intent(context, PantallaReportesActivity::class.java)) },
+            icon = { Icon(Icons.Default.Report, "Reportes") },
+            label = { Text("Reportes") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { context.startActivity(Intent(context, PantallaAvisoActivity::class.java)) },
+            icon = { Icon(Icons.Default.Notifications, "Avisos") },
+            label = { Text("Avisos") }
+        )
     }
 }
+```
 
-PantallaReportesActivity.kt
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
+---
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import mx.edu.utng.pal.gestorderesiduosurbanos.data.Reporte
+##  Formularios de Registro
 
-/**
-* Activity encargada de mostrar la pantalla de reportes de incidencias.
-*
-* Esta pantalla consume la colección "reportes" de Firebase Firestore y
-* muestra cada incidencia registrada por los usuarios o administradores.
-* Desde aquí también se puede acceder al formulario para generar nuevos reportes.
-  */
-  class PantallaReportesActivity : ComponentActivity() {
+### PantallaRegistroBoteActivity.kt
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-  super.onCreate(savedInstanceState)
-  setContent {
-  PantallaReportes()
-  }
-  }
-  }
-
-/**
-* Composable principal de la pantalla de reportes.
-*
-* Funcionalidades:
-* - Escucha en tiempo real los cambios en la colección "reportes".
-* - Muestra la lista de reportes en tarjetas individuales.
-* - Permite acceder al formulario de registro de reporte mediante un FAB.
-* - Incluye barra superior y barra de navegación inferior.
-    */
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun PantallaReportes() {
-    val context = LocalContext.current
-    val db = FirebaseFirestore.getInstance()
-    val scope = rememberCoroutineScope()
-
-var reportes by remember { mutableStateOf(listOf<Reporte>()) }
-
-/**
-    * Se crea un flujo reactivo usando callbackFlow para escuchar los cambios
-    * de la colección "reportes" y se recopilan los resultados en [reportes].
-      */
-      LaunchedEffect(Unit) {
-      callbackFlow {
-      val listener = db.collection("reportes")
-      .addSnapshotListener { snapshot, error ->
-      if (error == null && snapshot != null) {
-      trySend(snapshot.toObjects(Reporte::class.java))
-      }
-      }
-      awaitClose { listener.remove() }
-      }.collect { lista ->
-      reportes = lista
-      }
-      }
-
-Scaffold(
-topBar = {
-TopAppBar(
-title = { Text("Reportes", color = Color.White) },
-colors = TopAppBarDefaults.topAppBarColors(
-containerColor = Color(0xFF446247)
-)
-)
-},
-floatingActionButton = {
-FloatingActionButton(
-onClick = {
-context.startActivity(
-Intent(context, PantallaRegistroReporteActivity::class.java)
-)
-},
-containerColor = Color(0xFF446247)
-) {
-Icon(
-imageVector = Icons.Default.Add,
-contentDescription = "Agregar reporte",
-tint = Color.White
-)
-}
-},
-bottomBar = { BottomNavigationBarReportes() }
-) { padding ->
-
-     LazyColumn(
-         modifier = Modifier
-             .fillMaxSize()
-             .padding(padding)
-             .padding(16.dp)
-     ) {
-         items(reportes) { reporte ->
-             ReporteItem(reporte = reporte)
-         }
-     }
-}
-}
-
-/**
-* Tarjeta que representa visualmente un [Reporte] dentro de la lista.
-*
-* Muestra los datos más importantes:
-* - Tipo de reporte
-* - Usuario que lo generó
-* - Bote y colonia asociados
-* - Fecha y estado
-* - Descripción de la incidencia
-*
-* Esta vista puede expandirse más adelante para permitir acciones como:
-* cambiar estado, editar o eliminar reportes.
-  */
-  @Composable
-  fun ReporteItem(reporte: Reporte) {
-
-  Card(
-  modifier = Modifier
-  .fillMaxWidth()
-  .padding(vertical = 6.dp),
-  colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-  elevation = CardDefaults.cardElevation(4.dp),
-  shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
-  ) {
-  Column(Modifier.padding(16.dp)) {
-  Text(
-  text = "Reporte: ${reporte.tipo}",
-  fontSize = 18.sp,
-  fontWeight = FontWeight.Bold,
-  color = Color(0xFF446247)
-  )
-  Text("Usuario: ${reporte.usuario}")
-  Text("Bote: ${reporte.bote}")
-  Text("Colonia: ${reporte.colonia}")
-  Text("Fecha: ${reporte.fecha}")
-  Text("Estado: ${reporte.estado}")
-  Spacer(Modifier.height(4.dp))
-  Text("Descripción: ${reporte.descripcion}")
-  }
-  }
-  }
-
-/**
-* Barra de navegación inferior específica para la pantalla de reportes.
-*
-* Marca como seleccionada la sección "Reportes" y permite navegar
-* a las demás secciones del sistema: Mapa, Horarios, Botes, Avisos y Perfil.
-  */
-  @Composable
-  fun BottomNavigationBarReportes() {
-  val context = LocalContext.current
-
-  NavigationBar(
-  containerColor = Color(0xFFF8F8F8),
-  tonalElevation = 8.dp
-  ) {
-  val items = listOf(
-  Triple("Mapa", Icons.Default.LocationOn, PantallaMapaActivity::class.java),
-  Triple("Horarios", Icons.Default.Schedule, PantallaRegistroHorarioActivity::class.java),
-  Triple("Botes", Icons.Default.Delete, PantallaBotesActivity::class.java),
-  Triple("Reportes", Icons.Default.Report, PantallaReportesActivity::class.java),
-  Triple("Avisos", Icons.Default.Notifications, PantallaAvisoActivity::class.java),
-  Triple("Perfil", Icons.Default.Person, PantallaStatsActivity::class.java)
-  )
-
-       items.forEach { (title, icon, screen) ->
-           NavigationBarItem(
-               selected = title == "Reportes",
-               onClick = {
-                   if (title != "Reportes") {
-                       context.startActivity(Intent(context, screen))
-                   }
-               },
-               icon = { Icon(icon, contentDescription = title, tint = Color(0xFF3D5F40)) },
-               label = { Text(title, color = Color(0xFF3D5F40)) }
-           )
-       }
-  }
-  }
-
-PantallaRegistroBoteActivity.kt
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -1182,6 +658,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -1189,616 +666,199 @@ import kotlinx.coroutines.tasks.await
 import mx.edu.utng.pal.gestorderesiduosurbanos.data.Bote
 
 /**
-* Activity encargada de mostrar el formulario de registro y edición de botes.
-*
-* Si se recibe un extra "boteId", la pantalla funciona en modo edición y
-* carga los datos del bote desde Firestore. En caso contrario, crea un
-* nuevo registro en la colección "botes".
-  */
-  class PantallaRegistroBoteActivity : ComponentActivity() {
+ * Formulario para registrar/editar botes
+ * 
+ * Modos:
+ * - Registro: boteId vacío
+ * - Edición: boteId con valor
+ */
+class PantallaRegistroBoteActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val boteId = intent.getStringExtra("boteId") ?: ""
+        setContent {
+            PantallaRegistroBoteUI(boteId)
+        }
+    }
+}
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-  super.onCreate(savedInstanceState)
-
-       val boteId = intent.getStringExtra("boteId") ?: ""
-
-       setContent {
-           PantallaRegistroBoteUI(boteId = boteId)
-       }
-  }
-  }
-
-/**
-* Composable que construye el formulario de registro/edición de un [Bote].
-*
-* Campos:
-* - Colonia
-* - Tipo de residuo
-* - Estado
-* - Latitud
-* - Longitud
-*
-* Cuando el usuario pulsa "Guardar", se realiza:
-* - Inserción si [boteId] está vacío.
-* - Actualización si [boteId] contiene un ID válido.
-*
-* @param boteId Identificador del bote a editar. Si está vacío, se registra uno nuevo.
-  */
-  @OptIn(ExperimentalMaterial3Api::class)
-  @Composable
-  fun PantallaRegistroBoteUI(boteId: String) {
-  val context = androidx.compose.ui.platform.LocalContext.current
-  val db = FirebaseFirestore.getInstance()
-  val scope = rememberCoroutineScope()
-
-  var colonia by remember { mutableStateOf("") }
-  var tipoResiduo by remember { mutableStateOf("") }
-  var estado by remember { mutableStateOf("") }
-  var lat by remember { mutableStateOf("") }
-  var lng by remember { mutableStateOf("") }
-
-  /**
-    * Si [boteId] no está vacío, se cargan los datos existentes del bote
-    * desde Firestore para permitir su edición.
-      */
-      LaunchedEffect(boteId) {
-      if (boteId.isNotEmpty()) {
-      val doc = db.collection("botes").document(boteId).get().await()
-      val bote = doc.toObject(Bote::class.java)
-      if (bote != null) {
-      colonia = bote.colonia
-      tipoResiduo = bote.tipoResiduo
-      estado = bote.estado
-      lat = bote.lat.toString()
-      lng = bote.lng.toString()
-      }
-      }
-      }
-
-  Scaffold(
-  topBar = {
-  TopAppBar(
-  title = {
-  Text(
-  text = if (boteId.isEmpty()) "Registrar Bote" else "Editar Bote",
-  color = Color.White
-  )
-  },
-  colors = TopAppBarDefaults.topAppBarColors(
-  containerColor = Color(0xFF446247)
-  )
-  )
-  }
-  ) { padding ->
-
-       Column(
-           modifier = Modifier
-               .fillMaxSize()
-               .padding(padding)
-               .padding(16.dp)
-       ) {
-
-           OutlinedTextField(
-               value = colonia,
-               onValueChange = { colonia = it },
-               label = { Text("Colonia") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = tipoResiduo,
-               onValueChange = { tipoResiduo = it },
-               label = { Text("Tipo de residuo") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = estado,
-               onValueChange = { estado = it },
-               label = { Text("Estado") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = lat,
-               onValueChange = { lat = it },
-               label = { Text("Latitud") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = lng,
-               onValueChange = { lng = it },
-               label = { Text("Longitud") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           Spacer(Modifier.height(24.dp))
-
-           Button(
-               onClick = {
-                   scope.launch {
-                       val latDouble = lat.toDoubleOrNull() ?: 0.0
-                       val lngDouble = lng.toDoubleOrNull() ?: 0.0
-
-                       val datos = hashMapOf(
-                           "colonia" to colonia,
-                           "tipoResiduo" to tipoResiduo,
-                           "estado" to estado,
-                           "lat" to latDouble,
-                           "lng" to lngDouble
-                       )
-
-                       if (boteId.isEmpty()) {
-                           // Modo registro
-                           val doc = db.collection("botes").document()
-                           datos["id"] = doc.id
-                           doc.set(datos).await()
-                       } else {
-                           // Modo edición
-                           datos["id"] = boteId
-                           db.collection("botes").document(boteId).set(datos).await()
-                       }
-
-                       (context as? Activity)?.finish()
-                   }
-               },
-               modifier = Modifier.fillMaxWidth(),
-               colors = ButtonDefaults.buttonColors(
-                   containerColor = Color(0xFF446247),
-                   contentColor = Color.White
-               )
-           ) {
-               Text("Guardar")
-           }
-       }
-  }
-  }
-
-PantallaRegistroAvisoActivity.kt
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
-
-import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import mx.edu.utng.pal.gestorderesiduosurbanos.data.Aviso
-
-/**
-* Activity encargada de mostrar el formulario para registrar o editar avisos.
-*
-* Cuando se recibe el extra "avisoId" se cargan los datos del aviso para
-* permitir su edición. Si no se recibe, se crea un nuevo aviso.
-  */
-  class PantallaRegistroAvisoActivity : ComponentActivity() {
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-  super.onCreate(savedInstanceState)
-
-       val avisoId = intent.getStringExtra("avisoId") ?: ""
-
-       setContent {
-           PantallaRegistroAvisoUI(avisoId = avisoId)
-       }
-  }
-  }
-
-/**
-* Composable del formulario de registro/edición de [Aviso].
-*
-* Permite capturar:
-* - Título
-* - Descripción
-* - Fecha
-* - Tipo
-* - Colonia
-*
-* @param avisoId Identificador del aviso cuando se realiza una edición.
-  */
-  @OptIn(ExperimentalMaterial3Api::class)
-  @Composable
-  fun PantallaRegistroAvisoUI(avisoId: String) {
-  val context = androidx.compose.ui.platform.LocalContext.current
-  val db = FirebaseFirestore.getInstance()
-  val scope = rememberCoroutineScope()
-
-  var titulo by remember { mutableStateOf("") }
-  var descripcion by remember { mutableStateOf("") }
-  var fecha by remember { mutableStateOf("") }
-  var tipo by remember { mutableStateOf("") }
-  var colonia by remember { mutableStateOf("") }
-
-  /**
-    * Si [avisoId] tiene valor, se obtienen los datos del aviso desde Firestore
-    * para mostrarlos en el formulario y poder modificarlos.
-      */
-      LaunchedEffect(avisoId) {
-      if (avisoId.isNotEmpty()) {
-      val doc = db.collection("avisos").document(avisoId).get().await()
-      val aviso = doc.toObject(Aviso::class.java)
-      if (aviso != null) {
-      titulo = aviso.titulo
-      descripcion = aviso.descripcion
-      fecha = aviso.fecha
-      tipo = aviso.tipo
-      colonia = aviso.colonia
-      }
-      }
-      }
-
-  Scaffold(
-  topBar = {
-  TopAppBar(
-  title = {
-  Text(
-  text = if (avisoId.isEmpty()) "Registrar Aviso" else "Editar Aviso",
-  color = Color.White
-  )
-  },
-  colors = TopAppBarDefaults.topAppBarColors(
-  containerColor = Color(0xFF446247)
-  )
-  )
-  }
-  ) { padding ->
-
-       Column(
-           modifier = Modifier
-               .fillMaxSize()
-               .padding(padding)
-               .padding(16.dp)
-       ) {
-
-           OutlinedTextField(
-               value = titulo,
-               onValueChange = { titulo = it },
-               label = { Text("Título") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = descripcion,
-               onValueChange = { descripcion = it },
-               label = { Text("Descripción") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = fecha,
-               onValueChange = { fecha = it },
-               label = { Text("Fecha") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = tipo,
-               onValueChange = { tipo = it },
-               label = { Text("Tipo de aviso") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = colonia,
-               onValueChange = { colonia = it },
-               label = { Text("Colonia") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           Spacer(Modifier.height(24.dp))
-
-           Button(
-               onClick = {
-                   scope.launch {
-                       val datos = hashMapOf(
-                           "titulo" to titulo,
-                           "descripcion" to descripcion,
-                           "fecha" to fecha,
-                           "tipo" to tipo,
-                           "colonia" to colonia
-                       )
-
-                       if (avisoId.isEmpty()) {
-                           val doc = db.collection("avisos").document()
-                           datos["id"] = doc.id
-                           doc.set(datos).await()
-                       } else {
-                           datos["id"] = avisoId
-                           db.collection("avisos").document(avisoId).set(datos).await()
-                       }
-
-                       (context as? Activity)?.finish()
-                   }
-               },
-               modifier = Modifier.fillMaxWidth(),
-               colors = ButtonDefaults.buttonColors(
-                   containerColor = Color(0xFF446247),
-                   contentColor = Color.White
-               )
-           ) {
-               Text("Guardar")
-           }
-       }
-  }
-  }
-
-PantallaRegistroHorarioActivity.kt
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
-
-import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
-
-/**
-* Activity para el registro de horarios de recolección.
-*
-* Permite dar de alta un horario asociado a una colonia y a un tipo
-* de residuo. Los datos se almacenan en la colección "horarios".
-  */
-  class PantallaRegistroHorarioActivity : ComponentActivity() {
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-  super.onCreate(savedInstanceState)
-  setContent {
-  PantallaRegistroHorarioUI()
-  }
-  }
-  }
-
-/**
-* Composable que construye el formulario de registro de horario.
-*
-* Campos:
-* - Colonia
-* - Tipo de residuo
-* - Horario (texto libre)
-    */
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun PantallaRegistroHorarioUI() {
-    val context = androidx.compose.ui.platform.LocalContext.current
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PantallaRegistroBoteUI(boteId: String) {
+    val context = LocalContext.current
     val db = FirebaseFirestore.getInstance()
     val scope = rememberCoroutineScope()
-
-var colonia by remember { mutableStateOf("") }
-var tipoResiduo by remember { mutableStateOf("") }
-var horario by remember { mutableStateOf("") }
-
-Scaffold(
-topBar = {
-TopAppBar(
-title = { Text("Registro de Horario", color = Color.White) },
-colors = TopAppBarDefaults.topAppBarColors(
-containerColor = Color(0xFF446247)
-)
-)
+    
+    var colonia by remember { mutableStateOf("") }
+    var tipoResiduo by remember { mutableStateOf("") }
+    var estado by remember { mutableStateOf("") }
+    var lat by remember { mutableStateOf("") }
+    var lng by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    
+    // Cargar datos si es edición
+    LaunchedEffect(boteId) {
+        if (boteId.isNotEmpty()) {
+            isLoading = true
+            val doc = db.collection("botes").document(boteId).get().await()
+            doc.toObject(Bote::class.java)?.let { bote ->
+                colonia = bote.colonia
+                tipoResiduo = bote.tipoResiduo
+                estado = bote.estado
+                lat = bote.lat.toString()
+                lng = bote.lng.toString()
+            }
+            isLoading = false
+        }
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        if (boteId.isEmpty()) "Registrar Bote" else "Editar Bote",
+                        color = Color.White
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF446247)
+                )
+            )
+        }
+    ) { padding ->
+        
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+            ) {
+                
+                OutlinedTextField(
+                    value = colonia,
+                    onValueChange = { colonia = it },
+                    label = { Text("Colonia") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Spacer(Modifier.height(12.dp))
+                
+                OutlinedTextField(
+                    value = tipoResiduo,
+                    onValueChange = { tipoResiduo = it },
+                    label = { Text("Tipo de residuo") },
+                    placeholder = { Text("Ej: Orgánico, Inorgánico, Reciclable") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Spacer(Modifier.height(12.dp))
+                
+                OutlinedTextField(
+                    value = estado,
+                    onValueChange = { estado = it },
+                    label = { Text("Estado") },
+                    placeholder = { Text("Ej: Vacío, Medio, Lleno") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Spacer(Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = lat,
+                        onValueChange = { lat = it },
+                        label = { Text("Latitud") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    OutlinedTextField(
+                        value = lng,
+                        onValueChange = { lng = it },
+                        label = { Text("Longitud") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                Spacer(Modifier.height(24.dp))
+                
+                Button(
+                    onClick = {
+                        scope.launch {
+                            val latDouble = lat.toDoubleOrNull() ?: 0.0
+                            val lngDouble = lng.toDoubleOrNull() ?: 0.0
+                            
+                            val datos = hashMapOf(
+                                "colonia" to colonia,
+                                "tipoResiduo" to tipoResiduo,
+                                "estado" to estado,
+                                "lat" to latDouble,
+                                "lng" to lngDouble
+                            )
+                            
+                            if (boteId.isEmpty()) {
+                                // Nuevo bote
+                                val doc = db.collection("botes").document()
+                                datos["id"] = doc.id
+                                doc.set(datos).await()
+                            } else {
+                                // Actualizar
+                                datos["id"] = boteId
+                                db.collection("botes").document(boteId).set(datos).await()
+                            }
+                            
+                            (context as? Activity)?.finish()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF446247)
+                    ),
+                    enabled = colonia.isNotBlank() && tipoResiduo.isNotBlank()
+                ) {
+                    Text("Guardar")
+                }
+            }
+        }
+    }
 }
-) { padding ->
+```
 
-     Column(
-         modifier = Modifier
-             .fillMaxSize()
-             .padding(padding)
-             .padding(16.dp)
-     ) {
+---
 
-         OutlinedTextField(
-             value = colonia,
-             onValueChange = { colonia = it },
-             label = { Text("Colonia") },
-             modifier = Modifier.fillMaxWidth()
-         )
+## Video Demostrativo
 
-         OutlinedTextField(
-             value = tipoResiduo,
-             onValueChange = { tipoResiduo = it },
-             label = { Text("Tipo de residuo") },
-             modifier = Modifier.fillMaxWidth()
-         )
+[Ver video en YouTube](https://www.youtube.com/watch?v=By6weXnRxCg)
 
-         OutlinedTextField(
-             value = horario,
-             onValueChange = { horario = it },
-             label = { Text("Horario") },
-             modifier = Modifier.fillMaxWidth()
-         )
+---
 
-         Spacer(Modifier.height(24.dp))
+## Licencia
 
-         Button(
-             onClick = {
-                 scope.launch {
-                     val datos = hashMapOf(
-                         "colonia" to colonia,
-                         "tipoResiduo" to tipoResiduo,
-                         "horario" to horario
-                     )
-                     db.collection("horarios").add(datos)
-                     (context as? Activity)?.finish()
-                 }
-             },
-             modifier = Modifier.fillMaxWidth(),
-             colors = ButtonDefaults.buttonColors(
-                 containerColor = Color(0xFF446247),
-                 contentColor = Color.White
-             )
-         ) {
-             Text("Guardar")
-         }
-     }
-}
-}
+Proyecto educativo desarrollado para la **Universidad Tecnológica del Norte de Guanajuato**  
+Asignatura: Aplicaciones Móviles – Unidad IV
 
-PantallaRegistroReporteActivity.kt
-package mx.edu.utng.pal.gestorderesiduosurbanos.ui
+---
 
-import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
+## Tecnologías Utilizadas
 
-/**
-* Activity que muestra el formulario para registrar un nuevo reporte
-* de incidencia sobre los botes de residuos.
-*
-* Los datos se almacenan en la colección "reportes" de Firestore.
-  */
-  class PantallaRegistroReporteActivity : ComponentActivity() {
+- **Android Studio** - IDE oficial
+- **Kotlin** - Lenguaje moderno y seguro
+- **Jetpack Compose** - UI declarativa
+- **Firebase Firestore** - Base de datos NoSQL
+- **Firebase Authentication** - Autenticación segura
+- **Google Maps SDK** - Mapas interactivos
+- **Coroutines** - Programación asíncrona
+- **Material Design 3** - Sistema de diseño moderno
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-  super.onCreate(savedInstanceState)
-  setContent {
-  PantallaRegistroReporteUI()
-  }
-  }
-  }
-
-/**
-* Formulario de registro de [Reporte].
-*
-* Campos:
-* - Usuario
-* - ID del bote
-* - Colonia
-* - Tipo de reporte
-* - Descripción
-* - Fecha
-*
-* El estado del reporte se inicializa normalmente como "pendiente".
-  */
-  @OptIn(ExperimentalMaterial3Api::class)
-  @Composable
-  fun PantallaRegistroReporteUI() {
-  val context = androidx.compose.ui.platform.LocalContext.current
-  val db = FirebaseFirestore.getInstance()
-  val scope = rememberCoroutineScope()
-
-  var usuario by remember { mutableStateOf("") }
-  var bote by remember { mutableStateOf("") }
-  var colonia by remember { mutableStateOf("") }
-  var tipo by remember { mutableStateOf("") }
-  var descripcion by remember { mutableStateOf("") }
-  var fecha by remember { mutableStateOf("") }
-
-  Scaffold(
-  topBar = {
-  TopAppBar(
-  title = { Text("Registro de Reporte", color = Color.White) },
-  colors = TopAppBarDefaults.topAppBarColors(
-  containerColor = Color(0xFF446247)
-  )
-  )
-  }
-  ) { padding ->
-
-       Column(
-           modifier = Modifier
-               .fillMaxSize()
-               .padding(padding)
-               .padding(16.dp)
-       ) {
-
-           OutlinedTextField(
-               value = usuario,
-               onValueChange = { usuario = it },
-               label = { Text("Usuario") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = bote,
-               onValueChange = { bote = it },
-               label = { Text("ID del bote") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = colonia,
-               onValueChange = { colonia = it },
-               label = { Text("Colonia") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = tipo,
-               onValueChange = { tipo = it },
-               label = { Text("Tipo de reporte") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = descripcion,
-               onValueChange = { descripcion = it },
-               label = { Text("Descripción") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           OutlinedTextField(
-               value = fecha,
-               onValueChange = { fecha = it },
-               label = { Text("Fecha") },
-               modifier = Modifier.fillMaxWidth()
-           )
-
-           Spacer(Modifier.height(24.dp))
-
-           Button(
-               onClick = {
-                   scope.launch {
-                       val datos = hashMapOf(
-                           "usuario" to usuario,
-                           "bote" to bote,
-                           "colonia" to colonia,
-                           "tipo" to tipo,
-                           "descripcion" to descripcion,
-                           "fecha" to fecha,
-                           "estado" to "pendiente"
-                       )
-
-                       db.collection("reportes").add(datos)
-                       (context as? Activity)?.finish()
-                   }
-               },
-               modifier = Modifier.fillMaxWidth(),
-               colors = ButtonDefaults.buttonColors(
-                   containerColor = Color(0xFF446247),
-                   contentColor = Color.White
-               )
-           ) {
-               Text("Guardar")
-           }
-       }
-  }
-  }
-🎥 Video de Demostración
-
-https://www.youtube.com/watch?v=By6weXnRxCg
-
-📜 Licencia
-
-Proyecto desarrollado con fines educativos para la Universidad Tecnológica del Norte de Guanajuato, dentro de la asignatura de Aplicaciones Móviles – Unidad IV.
+---

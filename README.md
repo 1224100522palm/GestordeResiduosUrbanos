@@ -1,3 +1,5 @@
+Gestor de Residuos Urbanos 
+
 Gestor de Residuos Urbanos es una aplicación móvil diseñada para mejorar la forma en que los ciudadanos reportan, registran y visualizan problemas relacionados con los residuos urbanos en su comunidad. Su propósito es ofrecer un medio accesible y rápido para notificar incidentes como acumulación de basura, puntos críticos de contaminación o contenedores desbordados. A través de una interfaz intuitiva y funcionalidades modernas, la aplicación busca fomentar la participación ciudadana y facilitar la comunicación entre la población y los servicios municipales responsables del mantenimiento urbano.
 
 La plataforma integra herramientas como geolocalización, registro fotográfico y almacenamiento en la nube para asegurar que cada reporte sea documentado de forma precisa y en tiempo real. Al centralizar esta información en un sistema digital, se habilita una mejor organización de los reportes y una mayor capacidad de análisis por parte de las autoridades, permitiendo identificar patrones, zonas con mayor demanda de atención y oportunidades para optimizar rutas de limpieza.
@@ -88,8 +90,6 @@ GestordeResiduosUrbanos/
 
 ---
 
-## 🔧 Configuración Inicial
-
 ### build.gradle.kts (Module: app)
 
 ```kotlin
@@ -144,6 +144,7 @@ dependencies {
 ```
 
 Modelos de Datos
+```
 Aviso.kt
 kotlinpackage mx.edu.utng.pal.gestorderesiduosurbanos.data
 
@@ -289,8 +290,9 @@ data class Usuario(
     var contrasena: String = "",
     var rol: String = "usuario"
 )
-
-🗄️ Repositorios
+```
+Repositorios
+```
 AvisoRepository.kt
 kotlinpackage mx.edu.utng.pal.gestorderesiduosurbanos.data
 
@@ -628,7 +630,8 @@ class ReporteRepository {
         ref.document(id).update("estado", estado).await()
     }
 }
-
+```
+```
 API y Red
 ApiClient.kt
 kotlinpackage mx.edu.utng.pal.gestorderesiduosurbanos.network
@@ -719,22 +722,14 @@ interface BoteApi {
 Perfecto Alan, voy a continuar tu **manual completo** pero **a partir de la pantalla `LoginActivity`**, con el mismo estilo pedagógico, comentarios y código coloreado para que se vea igual de bonito en GitHub.
 
 Puedes copiar y pegar esto directo en tu `README.md`.
+```
 
 ---
 
-## 🔐 Fase 4: Autenticación y Pantalla de Inicio de Sesión
 
-### Concepto general
+LoginActivity.kt
 
-**Analogía:**
-Imagina que la app es un edificio del gobierno. La **pantalla de login** es la puerta principal con guardia.
-Firebase Authentication es quien revisa tu identificación; Firestore guarda tus datos adicionales (rol, teléfono, etc.).
-
----
-
-### 4.1 `LoginActivity`: punto de entrada a la pantalla de inicio de sesión
-
-````kotlin
+````kotlin-
 ```kotlin
 // ui/LoginActivity.kt
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
@@ -1390,7 +1385,7 @@ fun BottomNavigationBarAvisos() {
     }
 }
 ```
-PantallaBotesActivity
+PantallaBotesActivity.kt
 ```
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
@@ -1634,7 +1629,7 @@ fun BottomNavigationBarBotes() {
     }
 }
 ```
-PantallaHorarioActivity
+PantallaHorarioActivity.kt
 ```
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
@@ -4805,6 +4800,132 @@ fun FeatureRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: Stri
 }
 
 ```
+Instrucciones de Instalación – Gestor de Residuos Urbanos
+
+Sigue estos pasos para clonar, configurar y ejecutar la aplicación correctamente en Android Studio.
+
+1. Requisitos Previos
+
+Antes de comenzar, asegúrate de tener instalado:
+
+Android Studio Flamingo/Koala o superior
+
+JDK 17 (Android Studio ya lo incluye)
+
+Git (opcional pero recomendado)
+
+Cuenta de Firebase (para conectar Firestore y Auth)
+
+Clave de Google Maps API
+
+2. Clonar o descargar el proyecto
+Opción A — Clonar con Git (recomendado)
+git clone https://github.com/tu-usuario/GestorResiduosUrbanos.git
+cd GestorResiduosUrbanos
+
+Opción B — Descargar ZIP
+
+Ve al repositorio en GitHub.
+
+Clic en Code → Download ZIP.
+
+Extrae el archivo.
+
+Abre el proyecto en Android Studio.
+
+3. Abrir el proyecto en Android Studio
+
+Abre Android Studio.
+
+Selecciona Open.
+
+Navega a la carpeta del proyecto:
+GestordeResiduosUrbanos/
+
+Espera a que Android Studio sincronice “Gradle Sync”.
+
+4. Configurar Firebase
+
+La aplicación usa:
+
+Firebase Authentication
+
+Firebase Firestore
+
+Firebase Storage (si lo agregas)
+
+Firebase Analytics
+
+Pasos:
+
+Entra a: https://console.firebase.google.com/
+
+Crea un nuevo proyecto (o usa uno existente).
+
+Ve a Project Settings → Add App → Android.
+
+Ingresa:
+
+Package name:
+mx.edu.utng.pal.gestorderesiduosurbanos
+
+Descarga el archivo:
+
+google-services.json
+
+Pégalo en:
+
+app/src/main/
+
+
+Verifica que el proyecto ya incluye:
+
+id("com.google.gms.google-services")
+
+
+y en el gradle raíz:
+
+classpath("com.google.gms:google-services:4.4.0")
+
+5. Configurar Google Maps
+
+Tu app incluye un mapa (Google Maps Compose), así que necesitas activar la API.
+
+Entra a:
+https://console.cloud.google.com/apis
+
+Habilita:
+
+Maps SDK for Android
+
+Geolocation API
+
+Crea una clave API.
+
+Copia tu clave.
+
+Ve al archivo:
+
+app/src/main/AndroidManifest.xml
+
+
+Reemplaza la clave en:
+
+<meta-data
+    android:name="com.google.android.geo.API_KEY"
+    android:value="TU_API_KEY_AQUI"/>
+
+6. Ejecutar la aplicación
+
+Conecta un dispositivo Android o crea un emulador.
+
+Ve al botón ► Run en Android Studio.
+
+Selecciona el dispositivo.
+
+Espera a que compile Jetpack Compose.
+
+La app iniciará en la pantalla de bienvenida/login.
 
 
 

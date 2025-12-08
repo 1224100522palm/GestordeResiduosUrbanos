@@ -19,7 +19,7 @@ Campos: colonia, tipo de residuo, estado del bote, latitud y longitud.
 Uso de IDs consecutivos y búsqueda de botes por ID local.
 
 
--Gestión de horarios de recolección
+- Gestión de horarios de recolección
 
 Módulo para registrar horarios por colonia.
 

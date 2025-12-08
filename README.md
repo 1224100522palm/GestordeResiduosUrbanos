@@ -173,7 +173,7 @@ dependencies {
 ```
 
 Modelos de Datos
-```
+```kotlin
 Aviso.kt
 kotlinpackage mx.edu.utng.pal.gestorderesiduosurbanos.data
 

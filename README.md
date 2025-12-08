@@ -321,7 +321,7 @@ data class Usuario(
 )
 ```
 Repositorios
-```
+```kotlin
 AvisoRepository.kt
 kotlinpackage mx.edu.utng.pal.gestorderesiduosurbanos.data
 
@@ -758,7 +758,7 @@ Puedes copiar y pegar esto directo en tu `README.md`.
 
 LoginActivity.kt
 
-````kotlin-
+````kotlin
 ```kotlin
 // ui/LoginActivity.kt
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
@@ -1415,7 +1415,7 @@ fun BottomNavigationBarAvisos() {
 }
 ```
 PantallaBotesActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.content.Intent
@@ -1659,7 +1659,7 @@ fun BottomNavigationBarBotes() {
 }
 ```
 PantallaHorarioActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.content.Intent
@@ -1904,7 +1904,7 @@ fun BottomNavigationBarBotes() {
 
 ```
 PantallaInicio.kt 
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import androidx.compose.foundation.layout.*
@@ -2008,7 +2008,7 @@ fun FuncionesItem(texto: String) {
 ```
 
 PantallaMapaActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.content.Intent
@@ -2214,7 +2214,7 @@ fun BottomNavigationBarMapa() {
 }
 ```
 PantallaRegistroHorarioActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -2584,7 +2584,7 @@ fun PantallaRegistroAvisoUI(avisoId: String) {
 }
 ```
 PantallaRegistroBoteActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -3043,7 +3043,7 @@ fun PantallaRegistroBoteUI(boteEditar: Bote?) {
 }
 ```
 PantallaRegistroHorarioActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -3384,7 +3384,7 @@ fun PantallaRegistroHorarioUI(
 }
 ```
 PantallaRegistroReporteActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -3677,7 +3677,7 @@ fun PantallaRegistroReporteUI() {
 }
 ```
 PantallaReportesActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.content.Intent
@@ -4012,7 +4012,7 @@ fun BottomNavigationBarReportes() {
 }
 ```
 PantallaStatsActivity
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -4390,7 +4390,7 @@ fun BottomNavigationBarPerfil() {
 }
 ```
 RegistroActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
 import android.app.Activity
@@ -4652,7 +4652,7 @@ fun PantallaRegistro() {
 }
 ```
 MainActivity.kt
-```
+```kotlin
 package mx.edu.utng.pal.gestorderesiduosurbanos
 
 import android.content.Intent

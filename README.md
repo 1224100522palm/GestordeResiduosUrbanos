@@ -1,42 +1,69 @@
+
 Gestor de Residuos Urbanos 
 
 Gestor de Residuos Urbanos es una aplicación móvil diseñada para mejorar la forma en que los ciudadanos reportan, registran y visualizan problemas relacionados con los residuos urbanos en su comunidad. Su propósito es ofrecer un medio accesible y rápido para notificar incidentes como acumulación de basura, puntos críticos de contaminación o contenedores desbordados. A través de una interfaz intuitiva y funcionalidades modernas, la aplicación busca fomentar la participación ciudadana y facilitar la comunicación entre la población y los servicios municipales responsables del mantenimiento urbano.
 
+
 La plataforma integra herramientas como geolocalización, registro fotográfico y almacenamiento en la nube para asegurar que cada reporte sea documentado de forma precisa y en tiempo real. Al centralizar esta información en un sistema digital, se habilita una mejor organización de los reportes y una mayor capacidad de análisis por parte de las autoridades, permitiendo identificar patrones, zonas con mayor demanda de atención y oportunidades para optimizar rutas de limpieza.
+
 
 Además, el proyecto tiene un enfoque ambiental y social, promoviendo prácticas responsables en el manejo de residuos y generando conciencia sobre la importancia de mantener espacios libres de basura. Su diseño modular y escalable permite añadir futuras mejoras, como estadísticas avanzadas, notificaciones o integración con sistemas municipales. En conjunto, Gestor de Residuos Urbanos representa una herramienta tecnológica eficiente para apoyar la mejora continua del entorno urbano.
 
+
 - Gestión de botes de residuos
+  
 Registro, edición y eliminación de botes.
+
 Campos: colonia, tipo de residuo, estado del bote, latitud y longitud.
+
 Uso de IDs consecutivos y búsqueda de botes por ID local.
 
+
 -Gestión de horarios de recolección
+
 Módulo para registrar horarios por colonia.
+
 Selección de días de la semana (Lu, Ma, Mi, Ju, Vi, Sa, Do).
+
 Selección de tipos de residuo (orgánico, inorgánico, vidrio, plástico, papel, etc.).
+
 Elección de hora con TimePicker y control de “activo/inactivo” en Firestore.
 
+
 - Módulo de reportes de incidentes
+  
 Registro de reportes asociados a un bote y a una colonia.
+
 Campos como usuario, tipo, descripción, fecha y estado del reporte.
+
 Pantalla con lista de reportes, pestañas por estado (por ejemplo “Abiertos”), búsqueda por texto y actualización de estado.
 
+
 - Módulo de avisos informativos
+
 Registro y edición de avisos con título, descripción, fecha, tipo (Información, Alerta, Recordatorio), colonia y “creadoPor”.
+
 Carga de colonias desde la colección de horarios para que solo se usen colonias registradas.
+
 Soporte para edición de avisos existentes y manejo de ID consecutivo (idInt).
 
+
 - Mapa de botes en Google Maps
-Pantalla de mapa que carga los botes desde Firestore y los muestra georreferenciados.
+  
+Pantalla de mapa que carga los botes desde Firestore y los muestra con georreferenciados.
+
 Uso de Google Maps (LatLng, CameraPosition) para centrar la vista en la zona urbana y visualizar la distribución de botes.
 
+
 - Gestión de usuarios y roles (admin/usuario)
+
 Pantalla de registro de usuarios con nombre, teléfono, correo y contraseña usando Firebase Authentication.
-Al registrarse, si el correo es admin@gmail.com se asigna rol admin, si no, rol usuario.
+
 Los datos del usuario se guardan en la colección usuarios de Firestore y se usan preferencias compartidas para la sesión.
 
+
 Imágenes de Pantallas
+
 ![Mapa de Botes](docs/screenshots/botes.jpg)
 ![Avisos](docs/screenshots/avisos.jpg)
 ![Reportes](docs/screenshots/Reportes.jpg)
@@ -45,9 +72,13 @@ Imágenes de Pantallas
 ![Perfil](docs/screenshots/perfil7.jpg)
 
 Tecnologías Utilizadas
+
 La aplicación Gestor de Residuos Urbanos fue desarrollada utilizando un conjunto de tecnologías modernas orientadas a la creación de aplicaciones móviles robustas, escalables y fáciles de mantener. En la capa de presentación se empleó Android Studio como entorno principal de desarrollo, junto con Kotlin como lenguaje base debido a su eficiencia, seguridad en tipos y compatibilidad plena con el ecosistema Android actual. La interfaz de usuario fue implementada mediante Jetpack Compose, el framework declarativo de Android que permite construir pantallas dinámicas, reactivas y con menos código, logrando así una experiencia visual más moderna y fluida para el usuario.
+
 Para el almacenamiento y gestión de datos, la aplicación utiliza Firebase Firestore, una base de datos NoSQL en la nube que permite sincronización en tiempo real y consultas eficientes. Esta tecnología es fundamental para funciones como la actualización instantánea de reportes, avisos, botes y horarios, lo cual permite que la información se mantenga siempre actualizada entre todos los usuarios de la aplicación. Asimismo, la autenticación se gestiona mediante Firebase Authentication, lo que facilita el registro y el inicio de sesión seguro, diferenciando entre usuarios administradores y usuarios estándar.
+
 En cuanto a la visualización geográfica, se integró Google Maps SDK for Android, que permite mostrar la ubicación de los botes en un mapa interactivo mediante marcadores. Esta tecnología brinda herramientas esenciales para manejar coordenadas, mover la cámara, personalizar iconos y ofrecer una visualización clara de la distribución de puntos de recolección de residuos.
+
 Además, la aplicación hace uso de componentes clave de Android Jetpack, como ViewModel, LiveData/StateFlow, coroutines y navegación por pantallas, lo que asegura una arquitectura organizada, con separación de responsabilidades y capacidad para escalar a nuevas funcionalidades. Finalmente, para persistencia local y manejo de sesión, se implementaron SharedPreferences, permitiendo recordar datos del usuario, rol y ajustes internos sin necesidad de acceder constantemente a la base de datos. En conjunto, estas tecnologías garantizan que Gestor de Residuos Urbanos sea una aplicación moderna, estable, rápida, segura y preparada para crecer con nuevas funciones en futuras versiones.
 
 
@@ -55,8 +86,6 @@ Además, la aplicación hace uso de componentes clave de Android Jetpack, como V
 ## Android con Jetpack Compose + Firebase
 
 > **Manual profesional para estudiantes de desarrollo móvil**
-
-
 ---
 
 ##  Arquitectura del Proyecto

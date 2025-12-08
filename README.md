@@ -85,7 +85,6 @@ Además, la aplicación hace uso de componentes clave de Android Jetpack, como V
 #  Gestor de Residuos Urbanos - Manual Completo
 ## Android con Jetpack Compose + Firebase
 
-> **Manual profesional para estudiantes de desarrollo móvil**
 ---
 
 ##  Arquitectura del Proyecto
@@ -660,8 +659,10 @@ class ReporteRepository {
     }
 }
 ```
-```
+
+
 API y Red
+```kotlin
 ApiClient.kt
 kotlinpackage mx.edu.utng.pal.gestorderesiduosurbanos.network
 
@@ -753,13 +754,9 @@ Perfecto Alan, voy a continuar tu **manual completo** pero **a partir de la pant
 Puedes copiar y pegar esto directo en tu `README.md`.
 ```
 
----
-
-
 LoginActivity.kt
 
 ````kotlin
-```kotlin
 // ui/LoginActivity.kt
 package mx.edu.utng.pal.gestorderesiduosurbanos.ui
 
@@ -791,10 +788,7 @@ class LoginActivity : ComponentActivity() {
 }
 ````
 
-````
-
----
-
+````kotlin
 ### 4.2 `PantallaLogin`: interfaz + lógica de autenticación
 
 Aquí se combinan:

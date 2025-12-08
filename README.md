@@ -4823,9 +4823,11 @@ fun FeatureRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: Stri
 }
 
 ```
+
 Instrucciones de Instalación – Gestor de Residuos Urbanos
 
 Sigue estos pasos para clonar, configurar y ejecutar la aplicación correctamente en Android Studio.
+
 
 1. Requisitos Previos
 
@@ -4840,6 +4842,7 @@ Git (opcional pero recomendado)
 Cuenta de Firebase (para conectar Firestore y Auth)
 
 Clave de Google Maps API
+
 
 2. Clonar o descargar el proyecto
 Opción A — Clonar con Git (recomendado)
@@ -4856,6 +4859,7 @@ Extrae el archivo.
 
 Abre el proyecto en Android Studio.
 
+
 3. Abrir el proyecto en Android Studio
 
 Abre Android Studio.
@@ -4866,6 +4870,7 @@ Navega a la carpeta del proyecto:
 GestordeResiduosUrbanos/
 
 Espera a que Android Studio sincronice “Gradle Sync”.
+
 
 4. Configurar Firebase
 
@@ -4890,6 +4895,7 @@ Ve a Project Settings → Add App → Android.
 Ingresa:
 
 Package name:
+
 mx.edu.utng.pal.gestorderesiduosurbanos
 
 Descarga el archivo:
@@ -4900,21 +4906,21 @@ Pégalo en:
 
 app/src/main/
 
-
 Verifica que el proyecto ya incluye:
 
 id("com.google.gms.google-services")
 
-
 y en el gradle raíz:
 
 classpath("com.google.gms:google-services:4.4.0")
+
 
 5. Configurar Google Maps
 
 Tu app incluye un mapa (Google Maps Compose), así que necesitas activar la API.
 
 Entra a:
+
 https://console.cloud.google.com/apis
 
 Habilita:
@@ -4930,7 +4936,6 @@ Copia tu clave.
 Ve al archivo:
 
 app/src/main/AndroidManifest.xml
-
 
 Reemplaza la clave en:
 
